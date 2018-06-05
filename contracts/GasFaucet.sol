@@ -13,32 +13,7 @@ be changed over time to follow the token's price. The intention of this ratio is
 to ensure that the value of ether spent as gas is roughly equal to the value of
 the tokens received.
 
-Typically calls to dispense() cost about 41879 gas total. 
-
-spentwei = gastotal * gasprice
-
-spentusd = ethprice * spentwei/10**18
-
-ideal0xbtc = spentusd / 0xbtcprice
-
-ideal0xsatoshis = ideal0xbtc * 10**8
-
-
-(weipriceusd) / (0xsatoshipriceusd)
-
-(ethpriceusd/10**18) / (0xbtcpriceusd/10**8)
-
---> (ethpriceusd/10**10) * (1/0xbtcpriceusd)
---> (ethpriceusd/10**10) * (1/0xbtcpriceusd)
-
-weipersatoshi = 
-
-
-ethprice=500
-0xbtcprice=1.2
-
-
-priceratio = 
+Typically calls to dispense() cost about 41879 gas total.
 
 */
 
