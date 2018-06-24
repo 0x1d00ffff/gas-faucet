@@ -31,7 +31,7 @@ contract GasFaucet is Owned {
     address public faucetTokenAddress;
     uint256 public priceInWeiPerSatoshi;
 
-    event Dispense(address indexed from, uint256 sendAmount);
+    event Dispense(address indexed destination, uint256 sendAmount);
 
     constructor() public {
         // 0xBitcoin Token Address (Ropsten)
@@ -50,18 +50,15 @@ contract GasFaucet is Owned {
     // 
     // Tokens recieved (in satoshi) = gasprice / priceInWeiPerSatoshi
     // ------------------------------------------------------------------------
-    function dispense() public {
+    function dispense(address destination) public {
         uint256 sendAmount = calculateDispensedTokensForGasPrice(tx.gasprice);
         require(tokenBalance() > sendAmount);
 
-        ERC20Interface(faucetTokenAddress).transfer(msg.sender, sendAmount);
+        ERC20Interface(faucetTokenAddress).transfer(destination, sendAmount);
 
-        emit Dispense(msg.sender, sendAmount);
+        emit Dispense(destination, sendAmount);
     }
     
-    // ------------------------------------------------------------------------
-    // Retrieve the current dispensing rate in satoshis per gwei
-    // ------------------------------------------------------------------------
     function calculateDispensedTokensForGasPrice(uint256 gasprice) public view returns (uint256) {
         if(priceInWeiPerSatoshi == 0){ 
             return 0; 
@@ -77,14 +74,14 @@ contract GasFaucet is Owned {
     }
     
     // ------------------------------------------------------------------------
-    // Retrieve the current dispensing rate in satoshis per gwei
+    // Retrieve the current dispensing rate in wei per satoshi
     // ------------------------------------------------------------------------
     function getWeiPerSatoshi() public view returns (uint256) {
         return priceInWeiPerSatoshi;
     }
     
     // ------------------------------------------------------------------------
-    // Set the current dispensing rate in satoshis per gwei
+    // Set the current dispensing rate in wei per satoshi
     // ------------------------------------------------------------------------
     function setWeiPerSatoshi(uint256 price) public onlyOwner {
         priceInWeiPerSatoshi = price;
@@ -100,7 +97,7 @@ contract GasFaucet is Owned {
     // ------------------------------------------------------------------------
     // Owner can withdraw any accidentally sent eth
     // ------------------------------------------------------------------------
-    function withdrawEth(uint256 amount) public {
+    function withdrawEth(uint256 amount) public onlyOwner {
         require(amount < address(this).balance);
         owner.transfer(amount);
     }
@@ -108,7 +105,7 @@ contract GasFaucet is Owned {
     // ------------------------------------------------------------------------
     // Owner can transfer out any ERC20 tokens
     // ------------------------------------------------------------------------
-    function transferAnyERC20Token(address tokenAddress, uint256 tokens) public {
+    function transferAnyERC20Token(address tokenAddress, uint256 tokens) public onlyOwner {
         
         // Note: Owner has full control of priceInWeiPerSatoshi, so preventing
         // withdrawal of the faucetTokenAddress token serves no purpose. It
